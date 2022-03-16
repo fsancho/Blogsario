@@ -1,0 +1,429 @@
+     <meta charset="utf-8" emacsmode="-*- markdown -*-" lang="es">
+	 <!-- <link rel="stylesheet" href="markdeep-docs.css?">-->
+	 <link rel="stylesheet" href="newsmag.css?">
+
+                          **<a href="atdbi.md.html" style="text-decoration: none; color: inherit;">ATDBI</a>**
+    Representación
+	Sobre la Toma de Decisiones Bajo Incertidumbre
+
+
+El tratamiento computacional de la incertidumbre requiere de una representación formal. Este capítulo trata sobre cómo representar la incertidumbre. Comenzamos introduciendo la noción de grado de creencia y mostramos un conjunto de axiomas que  permite utilizar distribuciones de probabilidad para cuantificar nuestra incertidumbre. Discutimos varias formas útiles de distribuciones sobre variables discretas y continuas. Dado que muchos problemas importantes implican distribuciones de probabilidad sobre un gran número de variables, se discute una forma de representar eficientemente las distribuciones conjuntas que aprovecha la independencia condicional entre variables.
+
+# 2.1 Grados de creencia y probabilidad
+
+En los problemas que implican incertidumbre, es esencial poder comparar la verosimilitud de diferentes afirmaciones. Nos gustaría ser capaces de representar, por ejemplo, que la proposición $A$ es más plausible que la proposición $B$. Si $A$ representa "mi actuador falló", y $B$ representa "mi sensor falló", entonces escribiríamos $A \succ B$. Usando esta relación básica podemos definir varias otras relaciones:
+
+\begin{equation}
+A \prec B \text{ si y sólo si } B \succ A
+\end{equation}
+\begin{equation}
+A \sim B \text{ si y sólo si ni } A \succ B \text{ ni } B \prec A
+\end{equation}
+\begin{equation}
+A \succeq B \text{ si y sólo si } A \succ B \text{ o } A \sim B
+\end{equation}
+\begin{equation}
+A \preceq B \text{ si y sólo si } B \prec A \text{ o }A \sim B
+\end{equation}
+
+Queremos hacer ciertas suposiciones sobre las relaciones inducidas por los operadores $\succ$, $\prec$, y $\prec$. La suposición de comparabilidad universal requiere que se cumpla exactamente una de las siguientes condiciones: $A \succ B$, $A \sim B$, o $A \prec B$. El supuesto de transitividad requiere que si $A \succeq B$ y $B \succeq C$, entonces $A \succeq C$. Los supuestos de comparabilidad universal y de transitividad conducen a la posibilidad de representar la verosimilitud mediante una función real, $P$, que verifica las dos propiedades siguientes:
+
+\begin{equation}
+P(A) > P(B) \text{ si y sólo si } A \succ B
+\end{equation}
+\begin{equation}
+P(A) = P(B) \text{ si y sólo si } A \sim B
+\end{equation}
+
+Si hacemos una serie de suposiciones adicionales sobre la forma de $P$, entonces podemos demostrar que $P$ debe satisfacer los axiomas básicos de la probabilidad (véase el apéndice A.2). Si estamos seguros de $A$, entonces $P(A) = 1.$ Si creemos que $A$ es imposible, entonces $P(A) = 0$. La incertidumbre en la verdad de $A$ está representada por valores entre los dos extremos. Por lo tanto, las masas de probabilidad deben estar entre $0$ y $1$, con $0 \leq P(A) \leq 1$.
+
+# 2.2 Distribuciones de probabilidad
+
+Una distribución de probabilidad asigna probabilidades a diferentes resultados. Hay diferentes formas de representar las distribuciones de probabilidad según se trate de resultados discretos o continuos.
+
+## 2.2.1 Distribuciones de probabilidad discretas
+
+Una distribución de probabilidad discreta es una distribución sobre un conjunto discreto de valores. Podemos representar dicha distribución como una función de masa de probabilidad, que asigna una probabilidad a cada posible asignación de su variable de entrada a un valor. Por ejemplo, supongamos que tenemos una variable $X$ que puede tomar uno de los $n$ valores $1,\dots,n$, o, utilizando una notación alternativa, $1: n$. Una distribución asociada a $X$ especifica las $n$ probabilidades de las distintas asignaciones de valores a esa variable, en concreto $P(X = 1),\dots, P(X = n)$. La figura 2.1 muestra un ejemplo de distribución discreta. Las masas de probabilidad asociadas a las distribuciones discretas están sujetas a restricciones:
+
+\begin{equation}
+\sum_{i=1}^n P(X = i) = 1
+\end{equation}
+
+$$0 \leq P(X = i) \leq 1 \text{ para todo } i$$
+
+Por conveniencia notacional, utilizaremos letras minúsculas y superíndices como abreviatura cuando hablemos de la asignación de valores a las variables. Por ejemplo, $P(x^3)$ es la abreviatura de $P(X = 3)$. Si $X$ es una variable binaria, puede tomar el valor de verdadero o falso. Utilizaremos $0$ para representar falso y $1$ para representar verdadero. Por ejemplo, utilizamos $P(x^0)$ para representar la probabilidad de que $X$ sea falso. 
+
+Los parámetros de una distribución rigen las probabilidades asociadas a las distintas asignaciones. Por ejemplo, si utilizamos $X$ para representar el resultado de una tirada de un dado de seis caras, entonces tendríamos $P(x^1) = \theta_1,\dots, P(x^6) = \theta_6$, siendo $\theta_{1:6}$ son los seis parámetros de la distribución. Sin embargo, sólo necesitamos cinco parámetros independientes para especificar de forma única la distribución sobre los resultados de la tirada, porque sabemos que la distribución debe sumar $1$.
+
+## 2.2.2 Distribuciones de probabilidad continuas
+
+Una distribución de probabilidad continua es una distribución sobre un conjunto continuo de valores. Representar una distribución sobre una variable continua es un poco menos sencillo que para una variable discreta. Por ejemplo, en muchas distribuciones continuas, la probabilidad de que una variable tome un valor determinado es infinitesimalmente pequeña. Una forma de representar una distribución de probabilidad continua es utilizar una función de densidad de probabilidad (véase la figura 2.2), representada con letras minúsculas. Si $p(x)$ es una función de densidad de probabilidad sobre $X$, entonces $p(x)dx$ es la probabilidad de que $X$ caiga dentro del intervalo $(x, x + dx)$ a medida que $dx\to 0$. De forma similar a como las masas de probabilidad asociadas a una distribución discreta deben sumar a $1$, una función de densidad de probabilidad $p(x)$ debe integrarse a $1$:
+
+\begin{equation}
+\int_{-\infty}^{\infty} p(x) dx = 1
+\end{equation}
+
+Otra forma de representar una distribución continua es con una función de distribución acumulativa (véase la figura 2.3), que especifica la masa de probabilidad asociada a los valores por debajo de algún umbral. Si tenemos una función de distribución acumulativa $P$ asociada a la variable $X$, entonces $P(x)$ representa la masa de probabilidad asociada a que $X$ tome un valor menor o igual a $x$. Una función de distribución acumulativa puede definirse en términos de una función de densidad de probabilidad $p$ como:
+
+\begin{equation}
+cdf_X(x) = P(X \leq x) = \int_{-\infty}^x p(x') dx'
+\end{equation}
+
+Relacionada con la función de distribución acumulativa está la función de cuantiles, también llamada función de distribución acumulativa inversa (véase la figura 2.4). El valor del cuantil $X(\alpha)$ es el valor $x$ tal que $P(X \leq x) = \alpha$. En otras palabras, la función cuantil devuelve el valor mínimo de $x$ cuyo valor de distribución acumulativa es mayor o igual que $\alpha$. Por supuesto, se verifica que $0\leq \alpha \leq 1$.
+
+Hay muchas familias de distribuciones parametrizadas diferentes. En el apéndice B describimos varias. Una familia de distribuciones sencilla es la distribución uniforme $\mathcal{U}(a, b)$, que asigna la densidad de probabilidad uniformemente entre $a$ y $b$, y $0$ en cualquier otro lugar. Por tanto, la función de densidad de probabilidad es $p(x) = 1/(b - a)$ para $x$ en el intervalo $[a, b]$. Podemos utilizar $\mathcal{U}(x | a, b)$ para representar la densidad en $x$. El soporte de una distribución es el conjunto de valores a los que se asigna una densidad distinta de $0$. En el caso de $\mathcal{U}(a, b)$, el soporte es el intervalo $[a, b]$. Véase el ejemplo 2.1.
+
+!!!Tip
+   La distribución uniforme $\mathcal{U}(0, 10)$ asigna igual probabilidad a todos los valores del intervalo $[0, 10]$ con una función de densidad de probabilidad:
+   \begin{equation}
+   \mathcal{U}(x | 0, 10) =
+   \begin{cases}
+        1/10 & \text{si } 0 \leq x \leq 10\\
+        0 & \text{en caso contrario}
+    \end{cases}
+   \end{equation}
+   La probabilidad de que una muestra aleatoria de esta distribución sea igual a la constante $\pi$ es esencialmente $0$. Sin embargo, podemos definir probabilidades no nulas para que las muestras estén dentro de algún intervalo, como $[3, 5]$. Por ejemplo, la probabilidad de que una muestra se encuentre entre $3$ y $5$, dada la distribución representada aquí, es
+   \begin{equation}
+   \int_3^5 \mathcal{U}(x | 0, 10) dx = \frac{5 - 3}{10} = \frac{1}{5}
+   \end{equation}
+   El soporte de esta distribución es el intervalo $[0, 10]$.
+
+Otra distribución común para las variables continuas es la distribución gaussiana (también llamada distribución normal). La distribución gaussiana está parametrizada por una media $\mu$ y una varianza $\sigma^2$:
+\begin{equation}
+p(x) = N (x | \mu, \sigma^2)
+\end{equation}
+
+Aquí, $\sigma$ es la desviación estándar, que es la raíz cuadrada de la varianza. La varianza también se suele denotar por $\nu$. Utilizamos $N (\mu, \sigma^2)$ para representar una distribución gaussiana con los parámetros $\mu$ y $\sigma^2$, y $N (x | \mu, \sigma^2)$ para representar la densidad de probabilidad en $x$:
+\begin{equation}
+N(x |\mu, \sigma^2) = \frac{1}{\sigma} \phi(\frac{x - \mu}{\sigma})
+\end{equation}
+donde $\phi$ es la función de densidad normal estándar:
+\begin{equation}
+\phi(x) = \frac{1}{\sqrt{2}}\exp (-\frac{x^2}{2})
+\end{equation}
+
+En el Apéndice B se muestran gráficas de funciones de densidad gaussianas con diferentes parámetros. 
+
+Aunque la distribución gaussiana suele ser conveniente porque se define con sólo dos parámetros y facilita el cálculo y la derivación, tiene algunas limitaciones. Asigna una probabilidad distinta de $0$ a los valores positivos y negativos grandes, lo que puede no ser apropiado para la cantidad que estamos tratando de modelar. Por ejemplo, es posible que no queramos asignar probabilidades distintas de $0$ a los aviones que vuelan por debajo del suelo o a altitudes inviables. Podemos utilizar una distribución gaussiana truncada (véase la figura 2.5) para acotar el soporte de los valores posibles, es decir, el rango de valores a los que se asignan probabilidades no nulas. La función de densidad viene dada por:
+\begin{equation}
+N (x | \mu, \sigma^2, a, b) =\frac{\frac{1}{\sigma}\phi(\frac{x-\mu}{\sigma})}{\Phi(\frac{b-\mu}{\sigma})- \Phi(\frac{a-\mu}{\sigma})}
+\end{equation}
+cuando $x$ está dentro del intervalo $(a, b)$.
+
+La función $\Phi$ es la función de distribución acumulativa normal estándar, dada por:
+\begin{equation}
+\Phi(x) =\int_{-\infty}^x\phi(x') dx'
+\end{equation}
+
+La distribución gaussiana es unimodal, lo que significa que hay un punto en la distribución en el que la densidad aumenta en un lado y disminuye en el otro. Hay diferentes formas de representar las distribuciones continuas que son multimodales. Una forma es utilizar un modelo de mezcla, que es una mezcla de múltiples distribuciones. Mezclamos un conjunto de distribuciones unimodales para obtener una distribución multimodal. Un modelo de mezcla gaussiano es un modelo de mezcla que es simplemente una media ponderada de varias distribuciones gaussianas. Los parámetros de un modelo de mezcla gaussiano incluyen los parámetros de los componentes de la distribución gaussiana $\mu_{1:n}$, $\sigma^2_{1:n}$, así como sus pesos $\rho_{1:n}$. La densidad viene dada por:
+\begin{equation}
+p(x | \mu_{1:n}, \sigma^2_{1:n}, \rho_{1:n}) = \sum_{i=1}^n \rho_i N (x | \mu_i, \sigma^2_i)
+\end{equation}
+
+donde los pesos deben sumar $1$. El ejemplo 2.2 muestra un modelo de mezcla gaussiana con dos componentes.
+
+!!!Tip
+   Podemos crear un modelo de mezcla gaussiana con componentes $µ_1 = 5$, $\sigma_1 = 2$ y $\mu_2 = -5$, $\sigma_2 = 4$, ponderados según $\rho_1 = 0,6$ y $\rho_2 = 0,4$. Aquí representamos la densidad de dos componentes escalados por sus pesos:
+
+
+Otro enfoque para representar distribuciones continuas multimodales es la discretización. Por ejemplo, podemos representar una distribución sobre una variable continua como una densidad uniforme a trozos. La densidad se especifica mediante los bordes de los contenedores y se asocia una masa de probabilidad a cada contenedor. Esta distribución uniforme a trozos es un tipo de modelo de mezcla en el que los componentes son distribuciones uniformes.
+
+# 2.3 Distribuciones conjuntas
+
+Una distribución conjunta es una distribución de probabilidad sobre múltiples variables. Una distribución sobre una sola variable se llama distribución univariante, y una distribución sobre múltiples variables se llama distribución multivariante. Si tenemos una distribución conjunta sobre dos variables discretas $X$ e $Y$, entonces $P(x, y)$ denota la probabilidad de que tanto $X = x$ como $Y = y$.
+
+A partir de una distribución conjunta, podemos calcular una distribución marginal de una variable o un conjunto de variables sumando todas las demás variables mediante lo que se conoce como la ley de la probabilidad total:
+\begin{equation}
+P(x) = \sum_y P(x, y)
+\end{equation}
+
+Esta propiedad se utiliza a lo largo de este libro.
+
+La toma de decisiones en el mundo real a menudo requiere razonar sobre distribuciones conjuntas que implican muchas variables. A veces hay relaciones complejas entre las variables que es importante representar. Podemos utilizar diferentes estrategias para representar las distribuciones conjuntas dependiendo de si las variables implican valores discretos o continuos.
+
+## 2.3.1 Distribuciones conjuntas discretas
+
+Si las variables son discretas, la distribución conjunta puede representarse mediante una tabla como la que se muestra en la tabla 2.1. Esta tabla enumera todas las posibles asignaciones de valores a tres variables binarias. Cada variable sólo puede ser $0$ ó $1$, lo que da como resultado $2^3 = 8$ asignaciones posibles. Como ocurre con otras distribuciones discretas, las probabilidades de la tabla deben sumar $1$. De ello se deduce que, aunque hay ocho entradas en la tabla, sólo siete de ellas son independientes. Si $\theta_i$ representa la probabilidad en la fila $i$-ésima de la tabla, entonces sólo necesitamos los parámetros $\theta_1,\dots,\theta_7$ para representar la distribución porque sabemos que $\theta_8 = 1 - (\theta1 +\dots + \theta_7)$.
+
+Si tenemos $n$ variables binarias, necesitamos hasta $2^n - 1$ parámetros independientes para especificar la distribución conjunta. Este crecimiento exponencial del número de parámetros dificulta el almacenamiento de la distribución en memoria. En algunos casos, podemos suponer que nuestras variables son independientes, lo que significa que la realización de una no afecta a la distribución de probabilidad de la otra. Si $X$ e $Y$ son independientes, lo que a veces se escribe como $X\bot Y$, entonces sabemos que $P(x, y) = P(x)P(y)$ para todo $x$ e $y$. Supongamos que tenemos variables binarias $X_1,\dots, X_n$ que son todas independientes entre sí, resultando $P(x_{1:n}) = \prod_i P(x_i)$. Esta factorización nos permite representar esta distribución conjunta con sólo $n$ parámetros independientes en lugar de los $2^n - 1$ necesarios cuando no podemos asumir la independencia (véase la tabla 2.2). La independencia puede suponer un enorme ahorro en términos de complejidad de representación, pero a menudo es una suposición pobre.
+
+Podemos representar las distribuciones conjuntas en términos de factores. Un factor $\phi$ sobre un conjunto de variables es una función de asignaciones de esas variables a los números reales. Para representar una distribución de probabilidad, los números reales del factor deben ser no negativos. Un factor con valores no negativos puede ser normalizado de forma que represente una distribución de probabilidad. El algoritmo 2.1 proporciona una implementación para factores discretos, y el ejemplo 2.3 demuestra cómo funcionan.
+
+~~~~ C linenumbers
+struct Variable
+	name::Symbol
+	r::Int # number of possible values
+end
+
+const Assignment = Dict{Symbol,Int}
+const FactorTable = Dict{Assignment,Float64}
+
+struct Factor
+	vars::Vector{Variable}
+	table::FactorTable
+end
+
+variablenames(ϕ::Factor) = [var.name for var in ϕ.vars]
+
+select(a::Assignment, varnames::Vector{Symbol}) =
+	Assignment(n=>a[n] for n in varnames)
+	
+function assignments(vars::AbstractVector{Variable})
+	names = [var.name for var in vars]
+	return vec([Assignment(n=>v for (n,v) in zip(names, values))
+		for values in product((1:v.r for v in vars)...)])
+end
+
+function normalize!(ϕ::Factor)
+	z = sum(p for (a,p) in ϕ.table)
+	for (a,p) in ϕ.table
+		ϕ.table[a] = p/z
+	end
+	return ϕ
+end
+~~~~
+
+Podemos instanciar la tabla 2.1 usando el tipo Factor como muestra el siguiente código:
+
+~~~~ C
+# requires convenience functions from appendix G.5
+X = Variable(:x, 2)
+Y = Variable(:y, 2)
+Z = Variable(:z, 2)
+ϕ = Factor([X, Y, Z], FactorTable(
+	(x=1, y=1, z=1) => 0.08, (x=1, y=1, z=2) => 0.31,
+	(x=1, y=2, z=1) => 0.09, (x=1, y=2, z=2) => 0.37,
+	(x=2, y=1, z=1) => 0.01, (x=2, y=1, z=2) => 0.05,
+	(x=2, y=2, z=1) => 0.02, (x=2, y=2, z=2) => 0.07,
+))
+~~~~
+
+Otro enfoque para reducir el almacenamiento necesario para representar distribuciones conjuntas con valores repetidos es utilizar un árbol de decisión. En el ejemplo 2.4 se muestra un árbol de decisión con tres variables discretas. Aunque el ahorro en este ejemplo en términos de número de parámetros puede no ser significativo, puede llegar a ser bastante sustancial cuando hay muchas variables y muchos valores repetidos, o cuando los valores siguen un patrón adecuado.
+
+!!!Tip
+   Supongamos que tenemos la siguiente tabla que representa una distribución de probabilidad conjunta. Podemos utilizar el árbol de decisión de la derecha para representar de forma más compacta los valores de la tabla. Las flechas rojas se siguen cuando una variable es $0$, y las azules cuando una variable es $1$. En lugar de almacenar ocho probabilidades, almacenamos sólo cinco, junto con una representación del árbol.
+
+## 2.3.2 Distribuciones conjuntas continuas
+
+También podemos definir distribuciones conjuntas sobre variables continuas. Una distribución bastante sencilla es la distribución uniforme multivariante, que asigna una densidad de probabilidad constante en todos los lugares donde hay soporte. Podemos utilizar $\mathcal{U}(\mathbf{a},\mathbf{b})$ para representar una distribución uniforme sobre una caja, que es un producto cartesiano de intervalos, siendo el $i$-ésimo intervalo $[a_i, b_i]$. Esta familia de distribuciones uniformes es un tipo especial de distribución producto multivariante, que es una distribución definida en términos del producto de distribuciones univariantes. En este caso
+\begin{equation}
+\mathcal{U}(x | \mathbf{a}, \mathbf{b}) = \prod_i \mathcal{U}(x_i | a_i, b_i)
+\end{equation}
+
+Podemos crear un modelo de mezcla a partir de una colección ponderada de distribuciones uniformes multivariantes, igual que con las distribuciones univariantes. Si tenemos una distribución conjunta sobre $n$ variables y $k$ componentes de la mezcla, necesitamos definir $k(2n + 1)- 1$ parámetros independientes. Para cada uno de los $k$ componentes, tenemos que definir los límites superior e inferior para cada una de las variables, así como sus pesos. Podemos restar $1$ porque los pesos deben sumar $1$. La figura 2.6 muestra un ejemplo que puede representarse con cinco componentes.
+
+También es habitual representar funciones de densidad constantes a trozos discretizando cada una de las variables de forma independiente. La discretización se representa mediante un conjunto de límites para cada variable. Estos límites definen una cuadrícula sobre las variables. A continuación, asociamos una densidad de probabilidad constante a cada celda de la cuadrícula. No es necesario que los bordes de los contenedores estén uniformemente separados. En algunos casos, puede ser deseable tener una mayor resolución alrededor de ciertos valores. Diferentes variables pueden tener diferentes límites asociados a ellas. Si hay $n$ variables y $m$ contenedores para cada variable, entonces necesitamos $m^n - 1$ parámetros independientes para definir la distribución, además de los valores que definen los límites. En algunos casos, puede ser más eficiente desde el punto de vista de memoria representar una distribución conjunta continua como un árbol de decisión de manera similar a lo que hemos discutido para las distribuciones conjuntas discretas. Los nodos internos comparan las variables con los umbrales y los nodos de las hojas son valores de densidad. La figura 2.7 muestra un árbol de decisión que representa la función de densidad de la figura 2.6.
+
+Otra distribución útil es la distribución gaussiana multivariante con la función de densidad:
+
+\begin{equation}
+N(\mathbf{x} | \mathbf{\mu}, \Sigma) = \frac{1}{(2\pi)^{n/2}|\Sigma|^{1/2}} \exp\left( -\frac{1}{2}(\mathbf{x} - \mathbf{\mu})^T \Sigma^{-1}(\mathbf{x} - \mathbf{\mu})\right)
+\end{equation}
+
+donde $\mathbf{x}\in \mathbb{R}^n$, $\mathbf{\mu}$ es el vector de mediaa y $\Sigma$ es la matriz de covarianzas. La función de densidad dada aquí requiere que $\Sigma$ sea definida positiva. El número de parámetros independientes es igual a $n + (n + 1)n/2$, el número de componentes en $\mu$ sumado al número de componentes en el triángulo superior de la matriz $\Sigma$. El Apéndice B muestra gráficos de diferentes funciones de densidad gaussianas multivariadas. También podemos definir modelos de mezcla gaussiana multivariante. La figura 2.8 muestra un ejemplo de uno con tres componentes.
+
+Si tenemos una gaussiana multivariante con todas las variables independientes, entonces la matriz de covarianza $\Sigma$ es diagonal con sólo $n$ parámetros independientes. De hecho, podemos escribir la función de densidad como un producto de densidades gaussianas univariantes:
+\begin{equation}
+N (\mathbf{x} | \mathbf{µ}, Σ) =\prod_i N (x_i | µ_i, Σ_{ii})
+\end{equation}
+
+# 2.4 Distribuciones condicionales
+
+La sección anterior introdujo la idea de independencia, que puede ayudar a reducir el número de parámetros utilizados para definir una distribución conjunta. Sin embargo, como se mencionó, la independencia puede ser una suposición demasiado fuerte. Esta sección introducirá la idea de independencia condicional, que puede ayudar a reducir el número de parámetros independientes sin hacer suposiciones tan fuertes.
+
+Antes de hablar de la independencia condicional, introduciremos primero la noción de distribución condicional, que es una distribución sobre una variable dado el valor de otra u otras. La definición de probabilidad condicional establece que
+\begin{equation}
+P(x | y) = \frac{P(x, y)}{P(y)}
+\end{equation}
+donde $P(x | y)$ se lee como "probabilidad de $x$ dado $y$". En algunos contextos, es común referirse a $y$ como evidencia.
+
+Dado que una distribución de probabilidad condicional es una distribución de probabilidad sobre una o más variables dada alguna evidencia, sabemos que
+\begin{equation}
+\sum_x P(x | y) = 1
+\end{equation}
+para una $X$ discreta. Si $X$ es continua, se integra a $1$.
+
+Podemos incorporar la definición de probabilidad condicional en la ecuación (2.18) para obtener una forma ligeramente diferente de la ley de probabilidad total
+\begin{equation}
+P(x) = \sum_y P(x | y)P(y)
+\end{equation}
+para una distribución discreta.
+
+Otra relación útil que se desprende de la definición de probabilidad condicional es la regla de Bayes:
+\begin{equation}
+P(x | y) = \frac{P(y | x)P(x)}{P(y)}
+\end{equation}
+Si tenemos una representación de una distribución condicional $P(y | x)$, podemos aplicar la regla de Bayes para intercambiar $y$ y $x$ y obtener la distribución condicional $P(x | y)$.
+
+A continuación, discutiremos una variedad de formas de representar distribuciones de probabilidad condicionales sobre variables discretas y continuas.
+
+## 2.4.1 Modelos condicionales discretos
+
+Una distribución de probabilidad condicional sobre variables discretas puede representarse mediante una tabla. De hecho, podemos utilizar la misma representación de factores discretos que utilizamos anteriormente para las distribuciones conjuntas. La tabla 2.3 muestra un ejemplo de tabla que representa $P(X | Y, Z)$ con todas las variables binarias. A diferencia de una tabla conjunta (por ejemplo, la tabla 2.1), la columna que contiene las probabilidades no tiene por qué sumar $1$. Sin embargo, si sumamos las probabilidades que son consistentes con lo que estamos condicionando, debemos obtener $1$. Por ejemplo, condicionando a $y^0$ y $z^0$ (la evidencia), tenemos
+\begin{equation}
+P(x^0 | y^0, z^0) + P(x^1 | y^0, z^0) = 0,08 + 0,92 = 1
+\end{equation}
+
+Las tablas de probabilidad condicional pueden llegar a ser bastante grandes. Si creáramos una tabla como la 2.3, en la que todas las variables pueden tomar $m$ valores y estamos condicionando sobre $n$ variables, habría $m^{n+1}$ filas. Sin embargo, como los $m$ valores de la variable sobre la que no estamos condicionando deben sumar $1$, sólo hay $(m - 1)m^n$ parámetros independientes. Sigue habiendo un crecimiento exponencial en el número de variables sobre las que condicionamos. Cuando hay muchos valores repetidos en la tabla de probabilidad condicional, un árbol de decisión puede ser una representación más eficiente.
+
+## 2.4.2 Modelos gaussianos condicionales
+
+Un modelo gaussiano condicional puede utilizarse para representar una distribución sobre una variable continua dada una o más variables discretas. Por ejemplo, si tenemos una variable continua $X$ y una variable discreta $Y$ con valores $1:n$, podemos definir un modelo gaussiano condicional como sigue:
+\begin{equation}
+p(x | y) =    \begin{cases}
+        N (x | \mu_1, \sigma^2_1) & \text{si } y^1\\
+		\vdots\\
+        N (x | \mu_n, \sigma^2_n) & \text{si } y^n
+    \end{cases}
+\end{equation}
+
+con el vector de parámetros $\theta = [µ_{1:n}, σ_{1:n}]$. Los $2n$ parámetros pueden variarse independientemente. Si queremos condicionar en múltiples variables discretas, sólo tenemos que añadir más casos y parámetros asociados.
+
+## 2.4.3 Modelos gaussianos lineales
+
+El modelo gaussiano lineal de P(X | Y) representa la distribución sobre una variable continua X como una distribución gaussiana cuya media es una función lineal del valor de la variable continua Y. La función de densidad condicional es
+\begin{equation}
+p(x | y) = N (x | my + b, \sigma^2)
+\end{equation}
+con parámetros $\theta = [m, b, \sigma]$. La media es una función lineal de $y$ definida por los parámetros $m$ y $b$. La varianza es constante. La figura 2.9 muestra un ejemplo.
+
+## 2.4.4 Modelos gaussianos lineales condicionales
+
+El modelo gaussiano lineal condicional combina las ideas de los modelos gaussianos condicionales y gaussianos lineales para poder condicionar una variable continua sobre variables discretas y continuas. Supongamos que queremos representar $p(X | Y, Z)$, donde $X$ e $Y$ son continuas y $Z$ es discreta con valores $1 : n$. La función de densidad condicional es entonces
+\begin{equation}
+p(x | y, z) =    \begin{cases}
+        N (x | m_1 y +b_1, \sigma^2_1) & \text{si } z^1\\
+		\vdots\\
+        N (x | m_n y+ b_n, \sigma^2_n) & \text{si } z^n
+    \end{cases}
+\end{equation}
+
+Aquí, el vector de parámetros $\theta = [m_{1:n}, b_{1:n}, σ_{1:n}]$ tiene $3n$ componentes.
+
+## 2.4.5 Modelos sigmoides
+
+Podemos utilizar un modelo sigmoide14 para representar una distribución sobre una variable binaria condicionada a una variable continua. Por ejemplo, podemos querer representar $P(x^1 | y)$, donde $x$ es binaria e $y$ es continua. Por supuesto, podríamos establecer un umbral $\theta$ y decir que $P(x^1 | y) = 0$ si $y \le \theta$, y $P(x^1 | y) = 1$ en caso contrario. Sin embargo, en muchas aplicaciones, es posible que no queramos tener un umbral tan duro que resulte en la asignación de probabilidad $0$ a $x^1$ para ciertos valores de $y$. En lugar de un umbral duro, podríamos utilizar un umbral suave, que asigna probabilidades bajas cuando está por debajo de un umbral, y probabilidades altas cuando está por encima de un umbral. Una forma de representar un umbral suave es utilizar un modelo *logit*, que produce una curva sigmoidea:
+\begin{equation}
+P(x^1 | y) = \frac{1}{1 + \exp(-2 \frac{y-\theta_1}{\theta_2})}
+\end{equation}
+
+El parámetro $\theta_1$ rige la ubicación del umbral, y $\theta_2$ controla la "suavidad" o dispersión de las probabilidades. La figura 2.10 muestra un gráfico de $P(x^1 | y)$ con un modelo logit.
+
+## 2.4.6 Variables deterministas
+
+Algunos problemas pueden incluir una variable determinista, cuyo valor es fijo dada la evidencia. En otras palabras, asignamos la probabilidad $1$ a un valor que es una función determinista de su evidencia. Usar una tabla de probabilidad condicional para representar una variable determinista discreta es posible, pero es un desperdicio. Una sola instanciación de la variable tendrá probabilidad $1$ para cada instanciación parental, y las entradas restantes serán $0$. Nuestra implementación puede aprovechar esta escasez para una representación más compacta. Los algoritmos de este texto que utilizan factores discretos tratan las asignaciones que faltan en la tabla de factores como si tuvieran valor $0$, por lo que sólo tenemos que almacenar las asignaciones que tienen una probabilidad distinta de cero.
+
+# 2.5 Redes bayesianas
+
+Un grafo bayesiano puede utilizarse para representar una distribución de probabilidad conjunta. La estructura de un grafo bayesiano está definida por un grafo acíclico dirigido formado por nodos y aristas dirigidas. Cada nodo corresponde a una variable. Las aristas dirigidas conectan pares de nodos, estando prohibidos los ciclos en el grafo. Las aristas dirigidas indican relaciones probabilísticas directas. A cada nodo $X_i$ se le asocia una distribución condicional $P(X_i | Pa(X_i))$, donde $Pa(X_i)$ representa los padres de $X_i$ en el grafo. El algoritmo 2.2 proporciona una implementación de una estructura de datos de red bayesiana. El ejemplo 2.5 ilustra la aplicación de las redes bayesianas a un problema de vigilancia por satélite.
+
+~~~~ C linenumbers
+struct BayesianNetwork
+	vars::Vector{Variable}
+	factors::Vector{Factor}
+	graph::SimpleDiGraph{Int64}
+end
+~~~~
+
+!!!Tip
+   La siguiente figura muestra una red bayesiana para un problema de monitorización de satélites que implica $5$ variables binarias. Afortunadamente, tanto los fallos de las baterías como los de los paneles solares son poco frecuentes, aunque los fallos de los paneles solares son algo más probables que los de las baterías. Los fallos en cualquiera de los dos pueden llevar a un fallo del sistema eléctrico. Puede haber otras causas de fallo del sistema eléctrico que no sean los fallos de las baterías o de los paneles solares, como un problema con la unidad de gestión de la energía. Un fallo del sistema eléctrico puede dar lugar a una desviación de la trayectoria, que puede observarse desde la Tierra mediante un telescopio, así como a una pérdida de comunicación que interrumpa la transmisión de telemetría y datos de la misión a varias estaciones terrestres. Otras anomalías que no afectan al sistema eléctrico pueden provocar una desviación de la trayectoria y una pérdida de comunicación.
+   
+   Asociadas a cada una de las cinco variables hay cinco distribuciones de probabilidad condicional. Como $B$ y $S$ no tienen padres, sólo necesitamos especificar $P(B)$ y $P(S)$. El código crea una estructura de red bayesiana con valores de ejemplo para los elementos de las tablas de factores asociadas. Las tuplas de las tablas de factores indexan los dominios de las variables, que son $\{0, 1\}$ para todas las variables. Por ejemplo, $(e=2,b=1,s=1)$ corresponde a $(e^1, b^0, s^0)$. 
+   
+   ~~~~ C linenumbers
+   # requiere las funciones de conveniencia del apéndice G.5
+   B = Variable(:b, 2); S = Variable(:s, 2)
+   E = Variable(:e, 2)
+   D = Variable(:d, 2); C = Variable(:c, 2)
+   vars = [B, S, E, D, C]
+   factors = [
+      Factor([B], FactorTable((b=1,) => 0.99, (b=2,) => 0.01)),
+      Factor([S], FactorTable((s=1,) => 0.98, (s=2,) => 0.02)),
+      Factor([E,B,S], FactorTable(
+         (e=1,b=1,s=1) => 0.90, (e=1,b=1,s=2) => 0.04,
+         (e=1,b=2,s=1) => 0.05, (e=1,b=2,s=2) => 0.01,
+         (e=2,b=1,s=1) => 0.10, (e=2,b=1,s=2) => 0.96,
+         (e=2,b=2,s=1) => 0.95, (e=2,b=2,s=2) => 0.99)),
+      Factor([D, E], FactorTable(
+         (d=1,e=1) => 0.96, (d=1,e=2) => 0.03,
+         (d=2,e=1) => 0.04, (d=2,e=2) => 0.97)),
+      Factor([C, E], FactorTable(
+         (c=1,e=1) => 0.98, (c=1,e=2) => 0.01,
+         (c=2,e=1) => 0.02, (c=2,e=2) => 0.99))
+   ]
+   graph = SimpleDiGraph(5)
+   add_edge!(graph, 1, 3); add_edge!(graph, 2, 3)
+   add_edge!(graph, 3, 4); add_edge!(graph, 3, 5)
+   bn = BayesianNetwork(vars, factors, graph)
+   ~~~~
+
+La regla de la cadena para las redes bayesianas especifica cómo construir una distribución conjunta a partir de las distribuciones de probabilidad condicionales locales. Supongamos que tenemos las variables $X_{1:n}$ y queremos calcular la probabilidad de una asignación particular de todas estas variables a los valores $P(x_{1:n})$. La regla de la cadena dice
+\begin{equation}
+P(x_{1:n}) = \prod_{i=1}^n P(x_i | pa(x_i))
+\end{equation}
+donde $pa(x_i)$ es la asignación particular de los padres de $X_i$ a sus valores. El algoritmo 2.3 proporciona una implementación para redes bayesianas con distribuciones de probabilidad condicional representadas como factores discretos.
+
+~~~~ C
+function probability(bn::BayesianNetwork, assignment)
+	subassignment(ϕ) = select(assignment, variablenames(ϕ))
+	probability(ϕ) = get(ϕ.table, subassignment(ϕ), 0.0)
+	return prod(probability(ϕ) for ϕ in bn.factors)
+end
+~~~~
+
+En el ejemplo del satélite, supongamos que queremos calcular la probabilidad de que nada esté mal; es decir, $P(b^0, s^0, e^0, d^0, c^0)$. A partir de la regla de la cadena
+\begin{equation}
+P(b^0, s^0, e^0, d^0, c^0) = P(b^0)P(s^0)P(e^0 | b^0, s^0)P(d^0 | e^0)P(c^0 | e^0)
+\end{equation}
+
+Si hubiéramos especificado completamente una distribución conjunta sobre las cinco variables $B$, $S$, $E$, $D$ y $C$, entonces habríamos necesitado $2^5 - 1 = 31$ parámetros independientes. La estructura asumida en nuestra red bayesiana nos permite especificar la distribución conjunta utilizando sólo $1 + 1 + 4 + 2 + 2 = 10$ parámetros independientes. La diferencia entre $10$ y $31$ no representa un ahorro especialmente significativo en el número de parámetros, pero el ahorro puede llegar a ser enorme en redes bayesianas más grandes. El poder de las redes bayesianas proviene de su capacidad para reducir el número de parámetros necesarios para especificar una distribución de probabilidad conjunta.
+
+# 2.6 Independencia condicional
+
+La razón por la que una red bayesiana puede representar una distribución conjunta con menos parámetros independientes de los que se necesitarían normalmente son los supuestos de independencia condicional codificados en su estructura de grafo. La independencia condicional es una generalización de la noción de independencia introducida en la sección 2.3.1. Las variables $X$ e $Y$ son condicionalmente independientes dado $Z$ si y sólo si $P(X, Y | Z) = P(X | Z)P(Y | Z)$. La afirmación de que $X$ e $Y$ son condicionalmente independientes dado $Z$ se escribe como $(X\bot Y | Z)$. Es posible demostrar a partir de esta definición que $(X\bot Y | Z)$ si y sólo si $P(X | Z) = P(X | Y, Z)$. Dado $Z$, la información sobre $Y$ no proporciona ninguna información adicional sobre $X$, y viceversa.
+
+El ejemplo 2.6 muestra un ejemplo de esto.
+
+!!!Tip
+   Supongamos que la presencia de una desviación de la trayectoria del satélite ($D$) es condicionalmente independiente de si tenemos una pérdida de comunicación ($C$) dado el conocimiento de si tenemos un fallo del sistema eléctrico ($E$). Escribiríamos esto como $(D\bot C | E)$. Si sabemos que tenemos un fallo en el sistema eléctrico, el hecho de que observemos una pérdida de comunicación no influye en nuestra creencia de que hay una desviación de la trayectoria. Podemos tener una expectativa elevada de que hay una desviación de la trayectoria, pero eso es sólo porque sabemos que se ha producido un fallo del sistema eléctrico.
+
+Podemos utilizar un conjunto de reglas para determinar si la estructura de una red bayesiana implica que dos variables deben ser condicionalmente independientes dado un conjunto de otras variables de evidencia. Supongamos que queremos comprobar si $(A\bot B | C)$ está implicado por la estructura de la red, donde $C$ es un conjunto de variables de evidencia. Tenemos que comprobar todos los posibles caminos no dirigidos de $A$ a $B$ para lo que se llama $d$-separación.
+
+Un camino entre $A$ y $B$ está $d$-separado por $C$ si alguna de las siguientes cosas es cierta:
+1. El camino contiene una cadena de nodos, $X \to Y \to Z$, tal que $Y$ está en $C$.
+2. El camino contiene una bifurcación, $X \leftarrow Y \rightarrow Z$, tal que $Y$ está en $C$.
+3. El camino contiene una bifurcación invertida (también llamada estructura $v$), $X \to Y \leftarrow Z$, tal que $Y$ no está en $C$ y ningún descendiente de $Y$ está en $C$. 
+
+El ejemplo 2.7 proporciona alguna intuición para esta regla.
+
+!!!Tip
+   Si tenemos $X \to Y \to Z$ (cadena) o $X \leftarrow Y \to Z$ (bifurcación) con evidencia en $Y$, entonces $X$ y $Z$ son condicionalmente independientes, lo que significa que $P(X | Y, Z) = P(X | Y)$. Curiosamente, si las direcciones de las flechas fueran ligeramente diferentes, con $X \to Y \leftarrow Z$ (bifurcación invertida), entonces $X$ y $Z$ pueden dejar de ser condicionalmente independientes dado $Y$. En otras palabras, puede darse el caso de que $P(B | E) \neq P(B | S, E)$. Para proporcionar algo de intuición, consideremos la ruta de horquilla invertida desde el fallo de la batería $B$ hasta el fallo del panel solar $S$ a través del fallo del sistema eléctrico $E$. Supongamos que sabemos que tenemos un fallo eléctrico. Si sabemos que no tenemos un fallo de la batería, entonces estamos más inclinados a creer que tenemos un fallo del panel solar porque es una causa alternativa del fallo eléctrico. Por el contrario, si descubrimos que sí tenemos un fallo en la batería, entonces nuestra creencia de que tenemos un fallo en el panel solar disminuye. Este efecto se denomina **explicación**. Observar un fallo del panel solar explica la causa del fallo del sistema eléctrico.
+
+Decimos que $A$ y $B$ están $d$-separados por $C$ si todos los caminos entre $A$ y $B$ están $d$-separados por $C$. Esta $d$-separación implica que $(A\bot B | C)$. El ejemplo 2.8 demuestra este proceso para comprobar si un grafo implica un supuesto particular de independencia condicional.
+
+!!!Tip
+   Supongamos que queremos determinar si el grafo mostrado en el margen implica que $(D\bot B | F)$. Hay dos caminos no dirigidos de $D$ a $B$. Tenemos que comprobar ambos caminos para la $d$-separación.
+   
+   El camino $D \leftarrow A \to C \leftarrow B$ implica la bifurcación $D \leftarrow A \to C$, seguida de una bifurcación invertida, $A \to C \leftarrow B$. No hay pruebas en $A$, por lo que no hay $d$-separación de la bifurcación. Como $F$ es descendiente de $C$, no hay $d$-separación a lo largo de la horquilla invertida. Por lo tanto, no hay $d$-separación a lo largo de este camino.
+   
+   El segundo camino, $D \to E \leftarrow C \leftarrow B$, implica la horquilla invertida $D \to E \leftarrow C$ y una cadena, $E \leftarrow C \leftarrow B$. Como $F$ es descendiente de $E$, no hay $d$-separación a lo largo de la horquilla invertida. Como tampoco hay $d$-separación a lo largo de la parte de la cadena de este camino, no hay $d$-separación a lo largo de este camino de $D$ a $B$.
+   
+   Para que $D$ y $B$ sean condicionalmente independientes dado $F$, debe haber $d$-separación a lo largo de todos los caminos no dirigidos de $D$ a $B$. En este caso, ninguno de los dos caminos tiene $d$-separación. Por lo tanto, la independencia condicional no está implícita en la estructura de la red.
+
+A veces se utiliza el término **manta de Markov** del nodo $X$ para referirse al conjunto mínimo de nodos que, si se conocen sus valores, hacen que $X$ sea condicionalmente independiente de todos los demás nodos. Una manta de Markov de un nodo concreto resulta estar formado por sus padres, sus hijos y los demás padres de sus hijos.
+
+# 2.7 Resumen
+
+- La representación de la incertidumbre como una distribución de probabilidad está motivada por un conjunto de axiomas relacionados con la comparación de la verosimilitud de diferentes afirmaciones.
+- Hay muchas familias de distribuciones de probabilidad tanto discretas como continuas.
+- Las distribuciones de probabilidad continuas pueden representarse mediante funciones de densidad.
+- Las familias de distribuciones de probabilidad pueden combinarse en mezclas para crear distribuciones más flexibles.
+- Las distribuciones conjuntas son distribuciones sobre múltiples variables.
+- Las distribuciones condicionales son distribuciones sobre una o más variables dados los valores de las variables de evidencia.
+- Una red bayesiana está definida por una estructura de grafo y un conjunto de distribuciones condicionales.
+- Dependiendo de la estructura de la red bayesiana, podemos representar distribuciones conjuntas con menos parámetros debido a los supuestos de independencia condicional.
+
+
+<style class="fallback">body{visibility:hidden}</style><script>markdeepOptions={tocStyle:'medium'};</script>
+<!-- Markdeep: --><script src="markdeep.min.js?" charset="utf-8"></script>
+

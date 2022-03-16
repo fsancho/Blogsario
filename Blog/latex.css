@@ -1,0 +1,156 @@
+@import url('https://fonts.googleapis.com/css?family=Playfair+Display&display=swap');
+@import url('https://fonts.googleapis.com/css?family=Roboto+Slab:300,400,700&display=swap&subset=latin-ext');
+
+/* Style sheet for Markdeep that corresponds closely to the default Latex article format 
+   Put the following in your Markdeep document to use this:
+ 
+   <link rel="stylesheet" href="https://casual-effects.com/markdeep/latest/latex.css">
+*/
+
+body#md {
+    position: absolute;
+    font-family: "PT Serif" /*, "Roboto Slab", "Helvetica Neue", Helvetica, Arial, sans-serif;*/
+    text-align: justify;
+    margin: 0px 10%;
+    padding: 0;
+    max-width: 100%;
+    color: #333;
+    font-size: 18px;
+    font-weight: 200;
+    line-height: 165%;
+    padding-right: 20px;
+    overflow-x: hidden;
+    text-overflow: ellipses;
+}
+
+.md div.title {
+  font-weight: bold;
+  font-size: 26px;
+  padding-top: 30px;
+  padding-bottom: 12px;
+}
+
+@media print {
+  body {
+    max-width: 64%;
+  }
+
+  .md div.title {
+      padding-top: 150px;
+  }
+}
+
+.md div.subtitle {
+  font-size: 18px;
+  padding-bottom: 16px;
+}
+
+.md h1, .md div.nonumberh1 {
+  border: none;
+  font-size: 18px;
+  color: #000;
+}
+
+.md h2, .md div.nonumberh2 {
+  border: none;
+  font-size: 18px;
+  color: #000;
+}
+
+.md sup {
+  vertical-align: baseline;
+  position: relative;
+  top: -0.4em;
+}
+
+.md sub { 
+  top: 0.4em; 
+}
+
+.md h3, .md h4, .md h5, .md h6, .md div.nonumberh3, .md div.nonumberh4, .md div.nonumberh5, .md div.nonumberh6 {
+  border: none;
+  font-size: 18px;
+  color: #000;
+}
+
+.md div.imagecaption {
+  font-style: normal;
+}
+
+.md hr {
+  height: 0px;
+  border: none;
+  border-top: 0.1pt solid #777;
+}
+
+.md div.endnote {
+   font-size: 15px;
+}
+
+.md div.bib b {
+  font-weight: normal;
+}
+
+.md code {
+    font-size: 82%;
+}
+
+.md svg.diagram {
+    zoom: 80%;
+}
+
+
+.md ul li.asterisk:before, .md ul li.minus:before {
+    content: "●";
+    display: block;
+    float: left;
+    width: 1.2em;
+    margin-left: -18px;
+}
+
+.md ul li.asterisk, .md ul li.minus {
+    list-style-type: none;
+    margin-bottom: 10px;
+    padding-left: 4pt;
+}
+
+.md ol li {
+    margin-bottom: 10px;
+    padding-left: 4pt;
+}
+
+/* custom Admonition-style "note", "warn", "def" blocks */
+.md .note, .md .warn, .md .def, md .quote {
+    position: relative;
+    margin: 1em 0;
+    padding: .4rem 0.8rem;
+    border-radius: .1rem;
+}
+.md .note {
+    border-left: 1.2rem solid rgba(200,200,200,.4);
+    background-color: rgba(200,200,200,.15);
+}
+.md .warn {
+    border-left: 1.2rem solid rgba(255,145,0,.4);
+    background-color: rgba(255,145,0,.15);
+}
+.md .def {
+    border-left: 1.2rem solid rgba(255,23,68,.4);
+    background-color: rgba(255,23,68,.15);
+}
+
+.md .quote {
+	margin: 1em 2em 0 2em;
+    border-left: 1.2rem solid rgba(220,220,220,.4);
+    background-color: rgba(220,220,220,.15);
+}
+
+
+.md li {
+    text-align: justify;
+    width: 90%;
+}
+
+img {
+    margin: 20px;
+}

@@ -1,0 +1,382 @@
+     <meta charset="utf-8" emacsmode="-*- markdown -*-" lang="es">
+	 <!-- <link rel="stylesheet" href="markdeep-docs.css?">-->
+	 <link rel="stylesheet" href="newsmag.css?">
+
+                          **<a href="atdbi.md.html" style="text-decoration: none; color: inherit;">ATDBI</a>**
+    Inferencia
+	Sobre la Toma de Decisiones Bajo Incertidumbre
+
+
+En el capítulo anterior se explicó cómo representar las distribuciones de probabilidad. Este capítulo mostrará cómo utilizar estas representaciones probabilísticas para la inferencia, que implica determinar la distribución sobre una o más variables no observadas dados los valores asociados a un conjunto de variables observadas. Comenzaremos introduciendo los métodos de inferencia exacta, y como ésta puede ser intratable desde el punto de vista computacional en función de la estructura del grafo, también discutiremos varios algoritmos para la inferencia aproximada.
+
+# 3.1 Inferencia en redes bayesianas
+
+En los problemas de inferencia, queremos inferir una distribución sobre las variables de consulta dadas algunas variables de evidencia observadas. Los otros nodos se denominan variables ocultas. A menudo nos referimos a la distribución sobre las variables de consulta, dada la evidencia, como una distribución posterior.
+
+Para ilustrar los cálculos implicados en la inferencia, recordemos la red bayesiana del ejemplo 2.5, cuya estructura se reproduce en la figura 3.1. Supongamos que tenemos B como variable de consulta y las pruebas D = 1 y C = 1. La tarea de inferencia consiste en calcular P(b1 | d1, c1), lo que corresponde a calcular la probabilidad de que tengamos un fallo de batería dada una desviación de trayectoria observada y una pérdida de comunicación.
+
+A partir de la definición de probabilidad condicional introducida en la ecuación (2.22), sabemos que
+P(b1 | d1, c1) = P(b1, d1, c1) P(d1, c1) (3.1) 44
+
+Para calcular el numerador, debemos utilizar un proceso conocido como marginación, en el que sumamos las variables que no intervienen (en este caso S y E):
+P(b1, d1, c1) = ∑ s ∑ e P(b1, s, e, d1, c1) (3.2)
+Sabemos por la regla de la cadena para redes bayesianas introducida en la ecuación (2.31) que
+P(b1, s, e, d1, c1) = P(b1)P(s)P(e | b1, s)P(d1 | e)P(c1 | e) (3.3)
+
+Todos los componentes del lado derecho se especifican en las distribuciones de probabilidad condicional asociadas a los nodos de la red bayesiana. Podemos calcular el denominador de la ecuación (3.1) utilizando el mismo enfoque, pero con una suma adicional sobre los valores de B.
+
+Este proceso de utilizar la definición de probabilidad condicional, la marginación y la aplicación de la regla de la cadena puede utilizarse para realizar una inferencia exacta en cualquier red bayesiana. Podemos implementar la inferencia exacta utilizando factores. Recordemos que los factores representan distribuciones multivariantes discretas. Para ello, utilizamos las tres operaciones siguientes sobre los factores:
+
+- Utilizamos el producto de factores (algoritmo 3.1) para combinar dos factores y producir un factor más grande cuyo alcance es el alcance combinado de los factores de entrada. Si tenemos φ(X, Y) y ψ(Y, Z), entonces φ - ψ será sobre X, Y y Z con (φ - ψ)(x, y, z) = φ(x, y)ψ(y, z). El producto factorial se demuestra en el ejemplo 3.1.
+- Utilizamos la marginación de factores (algoritmo 3.2) para sumar una variable particular de toda la tabla de factores, eliminándola del ámbito resultante. El ejemplo 3.2 ilustra este proceso.
+- Usamos el condicionamiento de factores (algoritmo 3.3) con respecto a alguna evidencia para eliminar cualquier fila de la tabla que sea inconsistente con esa evidencia. El ejemplo 3.3 demuestra el condicionamiento por factores.
+
+Estas tres operaciones con factores se utilizan conjuntamente en el algoritmo 3.4 para realizar una inferencia exacta. Comienza calculando el producto de todos los factores, condicionando la evidencia, marginando las variables ocultas y normalizando. Un problema potencial de este enfoque es el tamaño del producto de todos los factores. El tamaño del producto de los factores es igual al producto del número de valores que puede asumir cada variable. Para el problema del ejemplo del satélite, sólo hay 25 = 32 asignaciones posibles, pero muchos problemas interesantes tendrían un producto de factores demasiado grande para enumerarlo de forma práctica.
+
+El producto factorial de dos factores produce un nuevo factor sobre la unión de sus variables. Aquí, producimos un nuevo factor a partir de dos factores que comparten una variable:
+
+...
+
+
+# 3.2 Inferencia en modelos Naive Bayes
+
+En la sección anterior se presentó un método general para realizar la inferencia exacta en cualquier red bayesiana. En esta sección se analiza cómo este mismo método puede utilizarse para resolver problemas de clasificación para un tipo especial de estructura de red bayesiana conocida como modelo Bayes ingenuo. Esta estructura se muestra en la figura 3.2. En la figura 3.3 se muestra una representación equivalente pero más compacta utilizando una placa, que aquí se muestra como una caja redondeada. La i = 1 : n en la parte inferior de la caja especifica que la i en el subíndice del nombre de la variable se repite de 1 a n.
+
+En el modelo Bayes ingenuo, la clase C es la variable de consulta, y las características observadas O1:n son las variables de evidencia. El modelo Bayes ingenuo se llama ingenuo porque asume la independencia condicional entre las variables de evidencia dada la clase. Utilizando la notación introducida en la sección 2.6, podemos decir (Oi⊥Oj | C) para todo i ̸= j. Por supuesto, si estos supuestos de independencia condicional no se cumplen, podemos añadir las aristas dirigidas necesarias entre las características observadas.
+
+Tenemos que especificar el previo P(C) y las distribuciones condicionales de clase P(Oi | C). Como se hizo en la sección anterior, podemos aplicar la regla de la cadena para calcular la distribución conjunta:
+P(c, o1:n) = P(c) n ∏ i=1 P(oi | c) (3.4)
+Nuestra tarea de clasificación consiste en calcular la probabilidad condicional P(c | o1:n).
+A partir de la definición de probabilidad condicional, tenemos
+P(c | o1:n) = P(c, o1:n) P(o1:n) (3.5)
+
+Podemos calcular el denominador marginando la distribución conjunta:
+P(o1:n) = ∑ c P(c, o1:n) (3.6)
+
+El denominador de la ecuación (3.5) no es una función de C y, por tanto, puede tratarse como una constante. Por lo tanto, podemos escribir
+P(c | o1:n) = κP(c, o1:n) (3.7)
+
+donde κ es una constante de normalización tal que ∑c P(c | o1:n) = 1. A menudo dejamos de lado κ y escribimos
+P(c | o1:n) ∝ P(c, o1:n) (3.8)
+
+donde el símbolo proporcional a ∝ se utiliza para representar que el lado izquierdo es proporcional al lado derecho. El ejemplo 3.4 ilustra cómo se puede aplicar la inferencia a la clasificación de pistas de radar.
+
+Podemos utilizar este método para inferir una distribución sobre las clases, pero para muchas aplicaciones, tenemos que comprometernos con una clase en particular. Es habitual clasificar según la clase con la mayor probabilidad posterior, arg maxc P(c | o1:n). Sin embargo, la elección de una clase es en realidad un problema de decisión que a menudo debe tener en cuenta las consecuencias de una clasificación errónea. Por ejemplo, si estamos interesados en utilizar nuestro clasificador para filtrar los objetivos que no son aviones con el fin de controlar el tráfico aéreo, entonces podemos permitirnos dejar pasar ocasionalmente algunas aves y otras pistas desordenadas a través de nuestro filtro. Sin embargo, querríamos evitar filtrar cualquier aeronave real porque eso podría provocar una colisión. En este caso, probablemente querríamos clasificar una pista como pájaro sólo si la probabilidad posterior fuera cercana a 1. Los problemas de decisión se discutirán en el capítulo 6.
+
+# 3.3 Eliminación de la variable suma-producto
+
+Se pueden utilizar varios métodos para realizar una inferencia eficiente en redes bayesianas más complicadas. Un método se conoce como eliminación de variables suma-producto, que intercala la eliminación de variables ocultas (sumas) con aplicaciones de la regla de la cadena (productos). Es más eficiente marginar las variables lo antes posible para evitar la generación de grandes factores.
+
+Supongamos que tenemos una pista de radar y queremos determinar si la ha generado un pájaro o un avión. Basamos nuestra inferencia en la velocidad del aire y en la cantidad de fluctuación del rumbo. La primera representa nuestra creencia sobre si el objetivo es un pájaro o un avión en ausencia de cualquier información sobre la pista. A continuación se presentan ejemplos de distribuciones condicionales de clase para la velocidad del aire v, estimadas a partir de los datos del radar:
+
+0
+20
+40
+60
+80
+100
+0
+2
+4
+6
+8
+×10−2
+v (m/s)
+p(v | c)
+Aircraft
+Bird
+Suppose from the chain rule, we determine:
+P(bird, slow, little heading fluctuation) = 0.03
+P(aircraft, slow, little heading fluctuation) = 0.01
+Of course, these probabilities do not sum to 1. If we want to determine the probability that a target is a bird given the evidence, then we would make the following calculation:
+P(bird | slow, little heading fluctuation) = 0.03 0.03 + 0.01 = 0.75
+
+We will illustrate the variable elimination algorithm by computing the distribution P(B | d1, c1) for the Bayesian network in figure 3.1. The conditional probability distributions associated with the nodes in the network can be represented by the following factors:
+φ1(B), φ2(S), φ3(E, B, S), φ4(D, E), φ5(C, E) (3.9)
+
+Because D and C are observed variables, the last two factors can be replaced with φ6(E) and φ7(E) by setting the evidence D = 1 and C = 1.
+
+We then proceed by eliminating the hidden variables in sequence. Different strategies can be used for choosing an ordering, but for this example, we arbitrarily choose the ordering E and then S. To eliminate E, we take the product of all the factors involving E and then marginalize out E to get a new factor:
+φ8(B, S) = ∑ e φ3(e, B, S)φ6(e)φ7(e) (3.10)
+
+We can now discard φ3, φ6, and φ7 because all the information we need from them is contained in φ8.
+
+Next, we eliminate S. Again, we gather all remaining factors that involve S and marginalize out S from the product of these factors:
+φ9(B) = ∑ s φ2(s)φ8(B, s) (3.11)
+
+We discard φ2 and φ8 and are left with φ1(B) and φ9(B). Finally, we take the product of these two factors and normalize the result to obtain a factor representing P(B | d1, c1).
+
+This procedure is equivalent to computing the following:
+P(B | d1, c1) ∝ φ1(B)∑ s � φ2(s)∑ e � φ3(e | B, s)φ4(d1 | e)φ5(c1 | e) �� (3.12)
+
+This produces the same result as, but is more efficient than, the naive procedure of taking the product of all of the factors and then marginalizing:
+P(B | d1, c1) ∝ ∑ s ∑ e φ1(B)φ2(s)φ3(e | B, s)φ4(d1 | e)φ5(c1 | e) (3.13)
+
+The sum-product variable elimination algorithm is implemented in algorithm 3.5. It takes as input a Bayesian network, a set of query variables, a list of observed values, and an ordering of the variables. We first set all observed values. Then, for each variable, we multiply all factors containing it and then marginalize that variable out. This new factor replaces the consumed factors, and we repeat the process for the next variable.
+
+For many networks, variable elimination allows inference to be done in an amount of time that scales linearly with the size of the network, but it has exponential time complexity in the worst case. What influences the amount of computation is the variable elimination order. Choosing the optimal elimination order is NP-hard,1 meaning that it cannot be done in polynomial time in the worst case (section 3.5). Even if we found the optimal elimination order, variable elimination can still require an exponential number of computations. Variable elimination heuristics generally try to minimize the number of variables involved in the intermediate factors generated by the algorithm.
+
+struct VariableElimination
+ordering # array of variable indices
+end
+function infer(M::VariableElimination, bn, query, evidence)
+Φ = [condition(ϕ, evidence) for ϕ in bn.factors]
+for i in M.ordering
+name = bn.vars[i].name
+if name ∉ query
+inds = findall(ϕ->in_scope(name, ϕ), Φ)
+if !isempty(inds)
+ϕ = prod(Φ[inds])
+deleteat!(Φ, inds)
+ϕ = marginalize(ϕ, name)
+push!(Φ, ϕ)
+end
+end
+end
+return normalize!(prod(Φ))
+end
+
+Algorithm 3.5.
+An implementation of the sum-product variable elimination algorithm, which takes in a Bayesian network bn, a list of query variables query, and evidence evidence. The variables are processed in the order given by ordering.
+
+3.4 Belief Propagation
+An approach to inference known as belief propagation works by propagating ‘‘messages’’ through the network using the sum-product algorithm in order to compute the marginal distributions of the query variables.2 Belief propagation requires linear time but provides an exact answer only if the network does not have undirected cycles. If the network has undirected cycles, then it can be converted to a tree by combining multiple variables into single nodes by using what is known as the junction tree algorithm. If the number of variables that have to be combined into any one node in the resulting network is small, then inference can be done efficiently. A variation of belief propagation known as loopy belief propagation can provide approximate solutions in networks with undirected cycles. Although this approach does not provide any guarantees and may not converge, it can work well in practice.3
+
+3.5 Computational Complexity
+We can show that inference in Bayesian networks is NP-hard by using an NP-complete problem called 3SAT.4 It is easy to construct a Bayesian network from an arbitrary 3SAT problem. For example, consider the following 3SAT formula:5
+F(x1, x2, x3, x4) = ( x1 ∨ x2 ∨ x3 ) ∧ ( ¬x1 ∨ ¬x2 ∨ x3 ) ∧ ( x2 ∨ ¬x3 ∨ x4 ) (3.14)
+
+where ¬ represents logical negation (‘‘not’’), ∧ represents logical conjunction (‘‘and’’), and ∨ represents logical disjunction (‘‘or’’). The formula consists of a conjunction of clauses, which are disjunctions of what are called literals. A literal is simply a variable or its negation.
+
+Figure 3.4 shows the corresponding Bayesian network representation. The variables are represented by X1:4, and the clauses are represented by C1:3. The distributions over the variables are uniform. The nodes representing clauses have as parents the participating variables. Because this is a 3SAT problem, each clause node has exactly three parents. Each clause node assigns probability 0 to assignments that do not satisfy the clause and probability 1 to all satisfying assignments. The remaining nodes assign probability 1 to true if all their parents are true. The original problem is satisfiable if and only if P(y1) > 0. Hence, inference in Bayesian networks is at least as hard as 3SAT.
+
+The reason we go to the effort of showing that inference in Bayesian networks is NP-hard is so that we know to avoid wasting time looking for an efficient, exact inference algorithm that works on all Bayesian networks. Therefore, research over the past couple of decades has focused on approximate inference methods, which are discussed next.
+
+3.6 Direct Sampling
+
+Motivated by the fact that exact inference is computationally intractable, many approximation methods have been developed. One of the simplest methods for inference is based on direct sampling, where random samples from the joint distribution are used to arrive at a probability estimate.6 To illustrate this point, suppose that we want to infer P(b1 | d1, c1) from a set of n samples from the joint distribution P(b, s, e, d, c). We use parenthetical superscripts to indicate the index of a sample, where we write (b(i), s(i), e(i), d(i), c(i)) for the ith sample. The direct sample estimate is
+P(b1 | d1, c1) ≈ ∑i(b(i) = 1 ∧ d(i) = 1 ∧ c(i) = 1) ∑i(d(i) = 1 ∧ c(i) = 1) (3.15)
+
+We use the convention where a logical statement in parentheses is treated numerically as 1 when true and 0 when false. The numerator is the number of samples consistent with b, d, and c all set to 1, and the denominator is the number of samples consistent with d and c all set to 1.
+
+Sampling from the joint distribution represented by a Bayesian network is straightforward. The first step involves finding a topological sort of the nodes in the Bayesian network. A topological sort of nodes in a directed acyclic graph is an ordered list such that if there is an edge A → B, then A comes before B in the list.7 For example, a topological sort for the network in figure 3.1 is B, S, E, D, C. A topological sort always exists, but it may not be unique. Another topological sort for the network is S, B, E, C, D.
+
+Once we have a topological sort, we can begin sampling from the conditional probability distributions. Algorithm 3.6 shows how to sample from a Bayesian network given an ordering X1:n that represents a topological sort. We draw a sample from the conditional distribution associated with Xi given the values of the parents that have already been assigned. Because X1:n is a topological sort, we know that all the parents of Xi have already been instantiated, allowing this sampling to be done. Direct sampling is implemented in algorithm 3.7 and is demonstrated in example 3.5.
+
+function Base.rand(ϕ::Factor)
+tot, p, w = 0.0, rand(), sum(values(ϕ.table))
+for (a,v) in ϕ.table
+tot += v/w
+if tot >= p
+return a
+end
+end
+return Assignment()
+end
+function Base.rand(bn::BayesianNetwork)
+a = Assignment()
+for i in topological_sort(bn.graph)
+name, ϕ = bn.vars[i].name, bn.factors[i]
+a[name] = rand(condition(ϕ, a))[name]
+end
+return a
+end
+
+Algorithm 3.6. A method for sampling an assignment from a Bayesian network bn. We also provide a method for sampling an assignment from a factor ϕ.
+
+Suppose we draw 10 random samples from the network in figure 3.1. We are interested in inferring P(b1 | d1, c1). Only 2 of the 10 samples (pointed to in the table) are consistent with observations d1 and c1. One sample has b = 1, and the other sample has b = 0. From these samples, we infer that P(b1 | d1, c1) = 0.5. Of course, we would want to use more than just 2 samples to accurately estimate P(b1 | d1, c1).
+
+struct DirectSampling
+m # number of samples
+end
+function infer(M::DirectSampling, bn, query, evidence)
+table = FactorTable()
+for i in 1:(M.m)
+a = rand(bn)
+if all(a[k] == v for (k,v) in pairs(evidence))
+b = select(a, query)
+table[b] = get(table, b, 0) + 1
+end
+end
+vars = filter(v->v.name ∈ query, bn.vars)
+return normalize!(Factor(vars, table))
+end
+
+Algorithm 3.7.
+The direct sampling inference method, which takes a Bayesian network bn, a list of query variables query, and evidence evidence. The method draws m samples from the Bayesian network and retains those samples that are consistent with the evidence. A factor over the query variables is returned. This method can fail if no samples that satisfy the evidence are found.
+
+3.7 Likelihood Weighted Sampling
+
+The problem with direct sampling is that we may waste time generating samples that are inconsistent with the observations, especially if the observations are unlikely. An alternative approach is called likelihood weighted sampling, which involves generating weighted samples that are consistent with the observations. To illustrate, we will again attempt to infer P(b1 | d1, c1). We have a set of n samples, where the ith sample is again denoted (b(i), s(i), e(i), d(i), c(i)). The weight of the ith sample is wi. The weighted estimate is
+P(b1 | d1, c1) ≈ ∑i wi(b(i) = 1 ∧ d(i) = 1 ∧ c(i) = 1) ∑i wi(d(i) = 1 ∧ c(i) = 1) (3.16)
+= ∑i wi(b(i) = 1) ∑i wi (3.17)
+
+To generate these weighted samples, we begin with a topological sort and sample from the conditional distributions in sequence. The only difference in likelihood weighting is how we handle observed variables. Instead of sampling their values from a conditional distribution, we assign variables to their observed values and adjust the weight of the sample appropriately. The weight of a sample is simply the product of the conditional probabilities at the observed nodes. Likelihood weighted sampling is implemented in algorithm 3.8. Example 3.6 demonstrates inference with likelihood weighted sampling.
+
+struct LikelihoodWeightedSampling
+m # number of samples
+end
+function infer(M::LikelihoodWeightedSampling, bn, query, evidence)
+table = FactorTable()
+ordering = topological_sort(bn.graph)
+for i in 1:(M.m)
+a, w = Assignment(), 1.0
+for j in ordering
+name, ϕ = bn.vars[j].name, bn.factors[j]
+if haskey(evidence, name)
+a[name] = evidence[name]
+w *= ϕ.table[select(a, variablenames(ϕ))]
+else
+a[name] = rand(condition(ϕ, a))[name]
+end
+end
+b = select(a, query)
+table[b] = get(table, b, 0) + w
+end
+vars = filter(v->v.name ∈ query, bn.vars)
+return normalize!(Factor(vars, table))
+end
+
+Algorithm 3.8.
+The likelihood weighted sampling inference method, which takes a Bayesian network bn, a list of query variables query, and evidence evidence. The method draws m samples from the Bayesian network but sets values from evidence when possible, keeping track of the conditional probability when doing so. These probabilities are used to weight the samples such that the final inference estimate is accurate. A factor over the query variables is returned.
+
+
+The table here shows five likelihood weighted samples from the network in figure 3.1. We sample from P(B), P(S), and P(E | B, S), as we would with direct sampling. When we come to D and C, we assign D = 1 and C = 1. If the sample has E = 1, then the weight is P(d1 | e1)P(c1 | e1); otherwise, the weight is P(d1 | e0)P(c1 | e0). If we assume
+P(d1 | e1)P(c1 | e1) = 0.95
+P(d1 | e0)P(c1 | e0) = 0.01
+then we may approximate from the samples in the table:
+P(b1 | d1, c1) = 0.95 0.95 + 0.95 + 0.01 + 0.01 + 0.95 ≈ 0.331
+
+Example 3.6. Likelihood weighted samples from a Bayesian network.
+
+Although likelihood weighting makes it so that all samples are consistent with the observations, it can still be wasteful. Consider the simple chemical detection Bayesian network shown in figure 3.5, and assume that we detected a chemical of interest. We want to infer P(c1 | d1). Because this network is small, we can easily compute this probability exactly by using Bayes’ rule:
+P(c1 | d1) = P(d1 | c1)P(c1) P(d1 | c1)P(c1) + P(d1 | c0)P(c0) (3.18)
+= 0.999 × 0.001 0.999 × 0.001 + 0.001 × 0.999 (3.19)
+= 0.5 (3.20)
+
+If we use likelihood weighting, then 99.9 % of the samples will have C = 0, with a weight of 0.001. Until we get a sample of C = 1, which has an associated weight of 0.999, our estimate of P(c1 | d1) will be 0.
+
+3.8 Gibbs Sampling
+
+An alternative approach to inference is to use Gibbs sampling,8 which is a kind of Markov chain Monte Carlo technique. Gibbs sampling involves drawing samples consistent with the evidence in a way that does not involve weighting. From these samples, we can infer the distribution over the query variables.
+
+Gibbs sampling involves generating a sequence of samples, starting with an initial sample, x(1) 1:n, generated randomly with the evidence variables set to their observed values. The kth sample x(k) 1:n depends probabilistically on the previous sample, x(k−1) 1:n . We modify x(k−1) 1:n in place to obtain x(k) 1:n as follows. Using any ordering of the unobserved variables, which need not be a topological sort, x(k) i is sampled from the distribution represented by P(Xi | x(k) −i ). Here, x(k) −i represents the values of all other variables except Xi in sample k. Sampling from P(Xi | x(k) −i ) can be done efficiently because we only need to consider the Markov blanket of variable Xi (see section 2.6).
+
+Unlike the other sampling methods discussed so far, the samples produced by this method are not independent. However, it can be proven that, in the limit, samples are drawn exactly from the joint distribution over the unobserved variables given the observations. Algorithm 3.9 shows how to compute a factor for P(Xi | x−i). Gibbs sampling is implemented in algorithm 3.10.
+
+function blanket(bn, a, i)
+name = bn.vars[i].name
+val = a[name]
+a = delete!(copy(a), name)
+Φ = filter(ϕ -> in_scope(name, ϕ), bn.factors)
+ϕ = prod(condition(ϕ, a) for ϕ in Φ)
+return normalize!(ϕ)
+end
+
+Algorithm 3.9. A method for obtaining P(Xi | x−i) for a Bayesian network bn given a current assignment a.
+
+Gibbs sampling can be applied to our running example. We can use our m samples to estimate
+P(b1 | d1, c1) ≈ 1 m ∑ i (b(i) = 1) (3.21)
+
+Figure 3.6 compares the convergence of the estimate of P(c1 | d1) in the chemical detection network using direct, likelihood weighted, and Gibbs sampling. Direct sampling takes the longest to converge. The direct sampling curve has long periods during which the estimate does not change because samples are inconsistent with the observations. Likelihood weighted sampling converges faster in this example. Spikes occur when a sample is generated with C = 1, and then gradually decrease. Gibbs sampling, in this example, quickly converges to the true value of 0.5.
+
+As mentioned earlier, Gibbs sampling, like other Markov chain Monte Carlo methods, produces samples from the desired distribution in the limit. In practice, we have to run Gibbs for some amount of time, called the burn-in period, before converging to a steady-state distribution. The samples produced during burn-in are normally discarded. If many samples are to be used from a single Gibbs sampling series, it is common to thin the samples by keeping only every hth sample because of potential correlation between samples.
+
+function update_gibbs_sample!(a, bn, evidence, ordering)
+for i in ordering
+name = bn.vars[i].name
+if !haskey(evidence, name)
+b = blanket(bn, a, i)
+a[name] = rand(b)[name]
+end
+end
+end
+function gibbs_sample!(a, bn, evidence, ordering, m)
+for j in 1:m
+update_gibbs_sample!(a, bn, evidence, ordering)
+end
+end
+struct GibbsSampling
+m_samples # number of samples to use
+m_burnin
+# number of samples to discard during burn-in
+m_skip
+# number of samples to skip for thinning
+ordering
+# array of variable indices
+end
+function infer(M::GibbsSampling, bn, query, evidence)
+table = FactorTable()
+a = merge(rand(bn), evidence)
+gibbs_sample!(a, bn, evidence, M.ordering, M.m_burnin)
+for i in 1:(M.m_samples)
+gibbs_sample!(a, bn, evidence, M.ordering, M.m_skip)
+b = select(a, query)
+table[b] = get(table, b, 0) + 1
+end
+vars = filter(v->v.name ∈ query, bn.vars)
+return normalize!(Factor(vars, table))
+end
+
+Algorithm 3.10. Gibbs sampling implemented for a Bayesian network bn with evidence evidence and an ordering ordering. The method iteratively updates the assignment a for m iterations.
+
+Figure 3.6. A comparison of sampling-based inference methods on the chemical detection network. Both likelihood weighted and direct sampling have poor conver- gence due to the rarity of events, whereas Gibbs sampling is able to converge to the true value efficiently, even with no burn-in period or thinning.
+
+3.9 Inference in Gaussian Models
+
+If the joint distribution is Gaussian, we can perform exact inference analytically. Two jointly Gaussian random variables a and b can be written
+� a b � ∼ N �� µa µb � , � A C C⊤ B �� (3.22)
+
+The marginal distribution of a multivariate Gaussian is also Gaussian:
+a ∼ N (µa, A) b ∼ N (µb, B) (3.23)
+
+The conditional distribution of a multivariate Gaussian is also Gaussian, with a convenient closed-form solution:
+p(a | b) = N � a | µa|b, Σa|b � (3.24)
+µa|b = µa + CB−1(b − µb) (3.25)
+Σa|b = A − CB−1C⊤ (3.26)
+
+Algorithm 3.11 shows how to use these equations to infer a distribution over a set of query variables given evidence. Example 3.7 illustrates how to extract the marginal and conditional distributions from a multivariate Gaussian.
+
+function infer(D::MvNormal, query, evidencevars, evidence)
+μ, Σ = D.μ, D.Σ.mat
+b, μa, μb = evidence, μ[query], μ[evidencevars]
+A = Σ[query,query]
+B = Σ[evidencevars,evidencevars]
+C = Σ[query,evidencevars]
+μ = μ[query] + C * (B\(b - μb))
+Σ = A - C * (B \ C')
+return MvNormal(μ, Σ)
+end
+
+Algorithm 3.11. Inference in a multivariate Gaussian distribution D. A vector of integers specifies the query variables in the query argument, and a vector of integers specifies the evidence variables in the evidencevars argument. The values of the evidence variables are contained in the vector evidence. The Distributions.jl package defines the MvNormal distribution.
+
+Consider
+� x1 x2 � ∼ N �� 0 1 � , � 3 1 1 2 ��
+
+The marginal distribution for x1 is N (0, 3), and the marginal distribution for x2 is N (1, 2).
+
+The conditional distribution for x1 given x2 = 2 is
+µx1|x2=2 = 0 + 1 · 2−1 · (2 − 1) = 0.5
+Σx1|x2=2 = 3 − 1 · 2−1 · 1 = 2.5
+x1 | (x2 = 2) ∼ N (0.5, 2.5)
+
+We can perform this inference calculation using algorithm 3.11 by constructing the joint distribution
+D = MvNormal([0.0,1.0],[3.0 1.0; 1.0 2.0])
+and then calling infer(D, [1], [2], [2.0]).
+
+Example 3.7. Marginal and conditional distributions for a multivariate Gaussian.
+
+3.10 Summary
+• Inference involves determining the probability of query variables given some evidence.
+• Exact inference can be done by computing the joint distribution over the variables, setting evidence, and marginalizing out any hidden variables.
+• Inference can be done efficiently in naive Bayes models, in which a single parent variable affects many conditionally independent children.
+• The variable elimination algorithm can make exact inference more efficient by marginalizing variables in sequence.
+• Belief propagation represents another method for inference, in which information is iteratively passed between factors to arrive at a result.
+• Inference in a Bayesian network can be shown to be NP-hard through a reduction to the 3SAT problem, motivating the development of approximate inference methods.
+• Approximate inference can be done by directly sampling from the joint distribution represented by a Bayesian network, but it may involve discarding many samples that are inconsistent with the evidence.
+• Likelihood weighted sampling can reduce computation required for approximate inference by only generating samples that are consistent with the evidence and weighting each sample accordingly.
+• Gibbs sampling generates a series of unweighted samples that are consistent with the evidence and can greatly speed approximate inference.
+• Exact inference can be done efficiently through matrix operations when the joint distribution is Gaussian.
+
+<style class="fallback">body{visibility:hidden}</style><script>markdeepOptions={tocStyle:'medium'};</script>
+<!-- Markdeep: --><script src="markdeep.min.js?" charset="utf-8"></script>
