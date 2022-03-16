@@ -1,0 +1,74 @@
+[
+{
+"order": 1,
+"href": "'./Blog/IA-una-ciencia-empírica.md.html'",
+"img": "https://www.nobelprize.org/images/simon-13300-portrait-medium.jpg",
+"title": "Inteligencia Artificial: una Ciencia empírica",
+"desc": "Traducción del español del artículo del mismo nombre de Herbert Simon (1995). De lectura obligada para los que quieran ir al fondo de la IA.",
+"tags": ["General", "Original"],
+"date": "16-03-2022"
+}, 
+{
+"order": 2,
+"href": "'repo.html'",
+"img": "https://picsum.photos/450/450?image=200",
+"title": "Página de Fernando Sancho Caparrini",
+"desc": "Lorem ipsum dolor sit amet, consectetur adipisicing elit. Assumenda modi inventore, totam vero consequuntur, aut animi veritatis tempora nulla facere placeat velit illum explicabo dicta enim ipsum. Vitae ducimus, ratione",
+"tags": ["General", "Original"],
+"date": "16-03-2022"
+},
+{
+"order": 3,
+"href": "'./Blog/atdbi.md.html'",
+"img": "https://picsum.photos/450/280?image=300",
+"title": "Esto es una prueba para ver cómo sale",
+"desc": "Lorem ipsum dolor sit amet, consectetur adipisicing elit. Assumenda modi inventore, totam vero consequuntur, aut animi veritatis tempora nulla facere placeat velit illum explicabo dicta enim ipsum. Vitae ducimus, ratione",
+"tags": ["General", "Original"],
+"date": "16-03-2022"
+},
+{
+"order": 4,
+"href": "'./Blog/inferencia.md.html'",
+"img": "https://picsum.photos/450/540?image=400",
+"title": "Esto es una prueba para ver cómo sale",
+"desc": "Lorem ipsum dolor sit amet, consectetur adipisicing elit. Assumenda modi inventore, totam vero consequuntur, aut animi veritatis tempora nulla facere placeat velit illum explicabo dicta enim ipsum. Vitae ducimus, ratione",
+"tags": ["General", "Original"],
+"date": "16-03-2022"
+},
+{
+"order": 5,
+"href": "'./Blog/Intro.md.html'",
+"img": "https://picsum.photos/450/380?image=500",
+"title": "Esto es una prueba para ver cómo sale",
+"desc": "Lorem ipsum dolor sit amet, consectetur adipisicing elit. Assumenda modi inventore, totam vero consequuntur, aut animi veritatis tempora nulla facere placeat velit illum explicabo dicta enim ipsum. Vitae ducimus, ratione",
+"tags": ["General", "Original"],
+"date": "16-03-2022"
+},
+{
+"order": 6,
+"href": "'./Blog/latex.md.html'",
+"img": "https://picsum.photos/450/300?image=600",
+"title": "Esto es una prueba para ver cómo sale",
+"desc": "Lorem ipsum dolor sit amet, consectetur adipisicing elit. Assumenda modi inventore, totam vero consequuntur, aut animi veritatis tempora nulla facere placeat velit illum explicabo dicta enim ipsum. Vitae ducimus, ratione",
+"tags": ["General", "Original"],
+"date": "16-03-2022"
+},
+{
+"order": 7,
+"href": "'./Blog/representacion.md.html'",
+"img": "https://picsum.photos/450/400?image=700",
+"title": "Esto es una prueba para ver cómo sale",
+"desc": "Lorem ipsum dolor sit amet, consectetur adipisicing elit. Assumenda modi inventore, totam vero consequuntur, aut animi veritatis tempora nulla facere placeat velit illum explicabo dicta enim ipsum. Vitae ducimus, ratione",
+"tags": ["General", "Original"],
+"date": "16-03-2022"
+},
+{
+"order": 8,
+"href": "http://www.cs.us.es",
+"img": "https://picsum.photos/450/300?image=800",
+"title": "Esto es una prueba para ver cómo sale",
+"desc": "Lorem ipsum dolor sit amet, consectetur adipisicing elit. Assumenda modi inventore, totam vero consequuntur, aut animi veritatis tempora nulla facere placeat velit illum explicabo dicta enim ipsum. Vitae ducimus, ratione",
+"tags": ["General", "Original"],
+"date": "16-03-2022"
+}
+]

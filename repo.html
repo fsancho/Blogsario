@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta charset="utf-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1" />
+		<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+        <link rel="stylesheet" href="style.css" />
+        <title>BLogSario</title>
+    </head>
+    <body>
+		
+        <div id="divemb" style="border: 1px solid #666; margin: 15px 80px 0 80px; display:none" >
+		
+			<button onclick="divemb.style.display='none';" style="background-color: black; border: none; color: white; padding: 8px 12px; font-size: 12px; cursor: pointer;margin-left: auto; margin-right: 0;"><i class="fa fa-close"></i></button>
+		
+            <iframe id="form-iframe" src="" style="margin: 0; width: 100%; height: 700px; border: none; overflow: hidden; background: #FFFFFF;" scrolling="yes";></iframe>
+			
+        </div>
+
+        <div class="masonry-wrapper" style="z-index: 1;">
+            <div id="mas" class="masonry"></div>
+
+            <div class="masonry-footer">
+                <p>Created with &#10084; with <a href="//w3bits.com/tools/masonry-generator/" target="_blank" rel="external noopener nofollow">CSS Masonry Generator</a></p>
+            </div>
+        </div>
+
+        <div class="fixed-footer">
+            <div class="container" style="text-align: right;">Fernando Sancho Caparrini &copy; 2022</div>
+        </div>
+
+        <script src="imagesloaded.pkgd.min.js"></script>
+        <script src="masonry.js"></script>
+
+        <script>
+			const requestURL = 'data.json';
+			var request = new XMLHttpRequest();
+			var docs = "";
+			request.onreadystatechange = function() {
+				if (this.readyState == 4 && this.status == 200) {
+					var myArr = JSON.parse(this.responseText);
+					myArr.sort(function(a, b){return a.order - b.order});
+					myFunction(myArr);
+				}
+			};
+			request.open('GET', requestURL, true);
+			request.send();
+	        var mas = document.getElementById("mas");
+			var	emb = document.getElementById('form-iframe');
+			
+			<!-- Carga el fichero clickeado y muestra el div del iframe-->
+			function opendoc(d) {
+				emb.src = d;
+				divemb.style.display='block';
+				frames[0].location.href.reload();
+			};
+			
+            <!-- Toma el elemento masonry, lee los datos de los documentos/artículos, y los -->
+            <!-- añade al masonry. -->
+
+			function myFunction(docs) {
+				docs.forEach(dat => {
+					markup = `
+						<div class="masonry-item">
+							<a style="text:decoration-none; color:black" href="javascript:opendoc(${dat.href});">
+								<div class="masonry-content">
+									<img src="${dat.img}" style="text-align:center">
+									<h3 class="masonry-title">${dat.order}. ${dat.title}</h3>
+									<p class="masonry-description">${dat.desc}</p>
+									<p class="masonry-description" align=right style="color:blue">${dat.tags}</p>
+								</div>
+							</a>
+						</div>`;
+					mas.insertAdjacentHTML("beforeend", markup);
+				});
+				waitForImages();
+			};
+        </script>
+    </body>
+</html>
